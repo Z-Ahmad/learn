@@ -19,3 +19,6 @@ __pycache__/
 
 # Visual makers: scratch Mermaid/SVG sources
 .viz-work/
+
+# Obsidian per-device UI state
+**/.obsidian/workspace*.json
