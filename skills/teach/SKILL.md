@@ -146,7 +146,7 @@ Lessons live in an Obsidian vault (`lessons/`), synced to all his devices, with 
 | `lessons/<subject>/_progress.md` | before probing | at the end of every session: map status, review queue, next session |
 | `lessons/<subject>/concepts/<Concept>.md` | when building on that concept | once a node lands: the rule, the one-line "how you could have discovered it", and `[[links]]` to the nodes it rests on (cross-subject links welcome) |
 | `lessons/<subject>/workspace.md` | when he says "check my work" | **never**, because it's his |
-| the session log (filename ends in the session id) | — | mirrored automatically; if it was created in `lessons/`, move it into `<subject>/` and keep the filename |
+| the session log (`YYYY-MM-DD-session-NN.md`) | — | mirrored automatically; if it was created in `lessons/`, move it into `<subject>/` and rename it to the date and session number. Keep the `log_id` frontmatter so the hook can still find it |
 
 How this changes the process:
 - **If `_progress.md` exists, this is a continuing subject.** Skip the goal questions that `_learner.md` already answers. Open with 2–3 `quiz` questions from the review queue (grade them as usual), then continue from "next session". Re-probe only the strands the new material depends on.
@@ -156,9 +156,11 @@ How this changes the process:
 
 ## Formatting — math renders as LaTeX
 
-Everything written in a session is rendered to him through Obsidian, which renders LaTeX natively. So whenever math notation is involved — explanations, questions, quiz options and explanations, anything — write it in LaTeX instead of plain-text approximations:
+He reads a session in two places: live in the agent's chat, and afterwards in Obsidian. Whenever math notation is involved — explanations, questions, quiz options and explanations, anything — write it in LaTeX instead of plain-text approximations, using delimiters that render in both:
 
-- Inline math: `$f(x)$`
-- Centered display math: `$$` fenced on its own lines, e.g. `$$\n f(x) \n$$`
+- Inline math: `\(f(x)\)`
+- Centered display math: `\[` and `\]` on their own lines
 
-If LaTeX can be used, it should be. Write $f(x) = x^2$, not `f(x) = x^2`.
+Never use `$` / `$$` in chat; some chat UIs show them as raw text. The lesson-log hooks convert `\( \)` / `\[ \]` to `$` / `$$` for Obsidian. Files you write straight into the vault (`_progress.md`, concept notes) skip the hook, so use `$` / `$$` there.
+
+If LaTeX can be used, it should be. Write \(f(x) = x^2\), not `f(x) = x^2`.
