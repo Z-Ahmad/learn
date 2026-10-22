@@ -13,7 +13,7 @@
 
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
 import { join } from "node:path"
-import { REPO, findLog, newLogPath, toObsidian } from "../../tools/lesson-log/common.mjs"
+import { REPO, findLog, newLogPath, toObsidian, withLogId } from "../../tools/lesson-log/common.mjs"
 
 const STATE = join(REPO, ".memory", "lesson-log")
 const TEACH_SKILL = /skills[\\/]teach[\\/]SKILL\.md$/i
@@ -45,7 +45,7 @@ if (event === "beforeSubmitPrompt") {
     const first = existsSync(pendingFile) ? readFileSync(pendingFile, "utf8") : ""
     const file = newLogPath(first, id8)
     mkdirSync(join(file, ".."), { recursive: true })
-    writeFileSync(file, first ? `---\n\n**You:** ${first}\n` : "", "utf8")
+    writeFileSync(file, withLogId(id8, first ? `---\n\n**You:** ${first}\n` : ""), "utf8")
   }
 } else if (event === "afterAgentResponse") {
   const text = (hook.text ?? "").trim()

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * md-log (Claude Code port of extensions/md-log.ts) — mirror a teaching session
- * to lessons/<date>-<slug>-<session8>.md so it can be read rendered (Cursor /
+ * to lessons/<date>-session-NN.md (log_id in frontmatter) so it can be read rendered (Cursor /
  * VS Code markdown preview, Obsidian) instead of in a terminal.
  *
  * Runs as a Stop hook: reads the hook JSON on stdin, re-renders the whole
@@ -17,7 +17,7 @@
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
 import { dirname } from "node:path"
-import { findLog, newLogPath, toObsidian } from "../../tools/lesson-log/common.mjs"
+import { findLog, newLogPath, toObsidian, withLogId } from "../../tools/lesson-log/common.mjs"
 
 let hook
 try {
@@ -95,4 +95,4 @@ for (const e of entries) {
 const sid = sessionId.slice(0, 8)
 const file = findLog(sid) ?? newLogPath(entries.map(userPrompt).find(Boolean), sid)
 mkdirSync(dirname(file), { recursive: true })
-writeFileSync(file, out.join("\n\n") + "\n", "utf8")
+writeFileSync(file, withLogId(sid, out.join("\n\n") + "\n"), "utf8")
