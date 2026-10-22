@@ -1,0 +1,10 @@
+{
+  "name": "@learn/render",
+  "version": "0.1.0",
+  "description": "Mermaid/SVG -> PNG renderer for the Claude Code / Cursor port of the visual makers.",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@mermaid-js/mermaid-cli": "^11.4.2"
+  }
+}
