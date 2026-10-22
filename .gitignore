@@ -20,5 +20,5 @@ __pycache__/
 # Visual makers: scratch Mermaid/SVG sources
 .viz-work/
 
-# Obsidian per-device UI state
-**/.obsidian/workspace*.json
+# The lessons/ vault travels by Obsidian Sync, not git
+lessons/

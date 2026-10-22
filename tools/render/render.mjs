@@ -12,7 +12,8 @@
  * unique filename and prints the RESULT block the makers return.
  *
  * Chrome: $CHROME_PATH, else host google-chrome, else the Playwright chromium
- * baked into the homelab-dev image (claude-rc / cursor-worker), else macOS apps.
+ * baked into the homelab-dev image (claude-rc / cursor-worker), else macOS apps,
+ * else Windows Chrome / Edge.
  */
 
 import { spawnSync } from "node:child_process"
@@ -43,6 +44,13 @@ function findChrome() {
     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
     "/Applications/Chromium.app/Contents/MacOS/Chromium",
   )
+  for (const base of [process.env.PROGRAMFILES, process.env["PROGRAMFILES(X86)"], process.env.LOCALAPPDATA]) {
+    if (!base) continue
+    candidates.push(
+      join(base, "Google", "Chrome", "Application", "chrome.exe"),
+      join(base, "Microsoft", "Edge", "Application", "msedge.exe"),
+    )
+  }
   return candidates.find((c) => c && existsSync(c))
 }
 

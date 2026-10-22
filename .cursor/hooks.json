@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeSubmitPrompt": [{ "command": "node .cursor/hooks/lesson-log.mjs", "timeout": 10 }],
+    "postToolUse": [{ "command": "node .cursor/hooks/lesson-log.mjs", "matcher": "Read", "timeout": 10 }],
+    "afterAgentResponse": [{ "command": "node .cursor/hooks/lesson-log.mjs", "timeout": 10 }]
+  }
+}

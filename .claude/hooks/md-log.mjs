@@ -15,12 +15,9 @@
  * Other tools, thinking, and subagent (sidechain) traffic are omitted.
  */
 
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs"
-import { dirname, join, resolve } from "node:path"
-import { fileURLToPath } from "node:url"
-
-const REPO = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..")
-const LESSONS = join(REPO, "lessons")
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
+import { dirname } from "node:path"
+import { findLog, newLogPath, toObsidian } from "../../tools/lesson-log/common.mjs"
 
 let hook
 try {
@@ -80,7 +77,7 @@ for (const e of entries) {
   }
   for (const b of blocks(e)) {
     if (e.type === "assistant" && b.type === "text" && b.text.trim()) {
-      out.push(b.text.trim())
+      out.push(toObsidian(b.text.trim()))
     } else if (b.type === "tool_use" && b.name === "AskUserQuestion") {
       pendingQuestions.set(b.id, true)
       for (const q of b.input?.questions ?? []) {
@@ -95,19 +92,7 @@ for (const e of entries) {
   }
 }
 
-mkdirSync(LESSONS, { recursive: true })
 const sid = sessionId.slice(0, 8)
-let file = readdirSync(LESSONS).find((f) => f.endsWith(`-${sid}.md`))
-if (!file) {
-  const first = entries.map(userPrompt).find(Boolean) ?? "lesson"
-  const slug =
-    first
-      .replace(/^\/teach\s*/, "")
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .slice(0, 50)
-      .replace(/-+$/, "") || "lesson"
-  file = `${new Date().toISOString().slice(0, 10)}-${slug}-${sid}.md`
-}
-writeFileSync(join(LESSONS, file), out.join("\n\n") + "\n", "utf8")
+const file = findLog(sid) ?? newLogPath(entries.map(userPrompt).find(Boolean), sid)
+mkdirSync(dirname(file), { recursive: true })
+writeFileSync(file, out.join("\n\n") + "\n", "utf8")

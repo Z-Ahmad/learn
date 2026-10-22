@@ -14,7 +14,7 @@ The real skill is [`skills/teach/SKILL.md`](../../../skills/teach/SKILL.md) at t
 | `quiz` | `AskUserQuestion`, then grade it yourself (see below) |
 | `ask_user_question` | `AskUserQuestion` |
 | `researcher` subagent | `Agent` with `subagent_type: "researcher"` |
-| "rendered through Obsidian" / md-log | the session is mirrored automatically to `lessons/*.md` by a Stop hook — just write normally |
+| "rendered through Obsidian" / md-log | the session is mirrored automatically by a Stop hook to `lessons/<date>-<topic>-<id>.md` (or wherever that file was moved, found by the `-<id>.md` suffix). Just write normally |
 
 ## Running a `quiz` with `AskUserQuestion`
 

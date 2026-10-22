@@ -18,10 +18,10 @@ It returns the same `RESULT:` block (`filename` + `path`), or `RESULT: NONE`. Th
 
 ## Embed
 
-The lesson log lives in `lessons/`, so embed with a standard relative markdown image — it renders in Cursor / VS Code preview and in Obsidian:
+Embed with a standard markdown image:
 
 ```
 ![<short alt text>](viz/<filename>)
 ```
 
-Not the Obsidian `![[...|500]]` form — that only renders in Obsidian.
+The log hook rewrites any image pointing at a `viz-*.png` into Obsidian's `![[<filename>|500]]` embed. Obsidian resolves that by filename, so it renders even after the log moves into a subject folder. When writing vault notes yourself (concept notes, `_progress.md`), use the `![[…]]` form directly.

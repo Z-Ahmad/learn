@@ -136,6 +136,24 @@ Repeat this full loop per node — don't front-load all the foundations once at 
 
 If you catch yourself asserting a fact he'd have to take on faith — foundational or not — stop: either motivate it and confirm it lands, or ground it in something already established. Unmotivated, unconfirmed facts don't lock in — that's the whole point.
 
+## Continuity — the vault remembers between sessions
+
+Lessons live in an Obsidian vault (`lessons/`), synced to all his devices, with one folder per subject. Short notes in that vault carry context from one session to the next, so you never need to re-read an old log:
+
+| File | Read | Write |
+|---|---|---|
+| `lessons/_learner.md` | at the start of **every** session, in every subject | when something durable shows up: a goal, a recurring misconception, how he learns best |
+| `lessons/<subject>/_progress.md` | before probing | at the end of every session: map status, review queue, next session |
+| `lessons/<subject>/concepts/<Concept>.md` | when building on that concept | once a node lands: the rule, the one-line "how you could have discovered it", and `[[links]]` to the nodes it rests on (cross-subject links welcome) |
+| `lessons/<subject>/workspace.md` | when he says "check my work" | **never**, because it's his |
+| the session log (filename ends in the session id) | — | mirrored automatically; if it was created in `lessons/`, move it into `<subject>/` and keep the filename |
+
+How this changes the process:
+- **If `_progress.md` exists, this is a continuing subject.** Skip the goal questions that `_learner.md` already answers. Open with 2–3 `quiz` questions from the review queue (grade them as usual), then continue from "next session". Re-probe only the strands the new material depends on.
+- **New subject:** create `<subject>/_progress.md` once the plan is approved (the dependency map goes there), plus an empty `workspace.md`, and link the subject from `_learner.md`.
+- **Multi-step questions:** suggest he works in `workspace.md`. A table to fill in works especially well for him.
+- **Review queue:** every miss that reveals a misconception, or a slip he repeats, goes in with a one-line re-check question. Drop an item after he gets it right in two separate sessions.
+
 ## Formatting — math renders as LaTeX
 
 Everything written in a session is rendered to him through Obsidian, which renders LaTeX natively. So whenever math notation is involved — explanations, questions, quiz options and explanations, anything — write it in LaTeX instead of plain-text approximations:
