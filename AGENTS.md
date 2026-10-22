@@ -28,7 +28,9 @@ and apply it. For diagrams, [`skills/visualize/SKILL.md`](skills/visualize/SKILL
   - Lesson log → automatic. `.cursor/hooks/lesson-log.mjs` starts a log the moment
     you read `skills/teach/SKILL.md`, then appends each prompt and reply (converting
     `\( \)` / `\[ \]` math to `$` / `$$`). Never append to the log by hand. Move it
-    into the subject folder on the first turn if it landed in `lessons/`.
+ into the subject folder on the first turn if it landed in `lessons/`. On your
+ second turn, check that the log exists and holds your first reply; if not,
+ tell him right away (the hooks may need a Cursor reload).
 
 ## The vault
 
