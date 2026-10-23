@@ -12,11 +12,12 @@
  */
 
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
-import { join } from "node:path"
-import { REPO, findLog, newLogPath, toObsidian, withLogId } from "../../tools/lesson-log/common.mjs"
+import { dirname, join } from "node:path"
+import { LESSONS, REPO, findLog, newLogPath, routeLogToSubject, toObsidian, withLogId } from "../../tools/lesson-log/common.mjs"
 
 const STATE = join(REPO, ".memory", "lesson-log")
 const TEACH_SKILL = /skills[\\/]teach[\\/]SKILL\.md$/i
+const SUBJECT_PROGRESS = /lessons[\\/]([^\\/]+)[\\/]_progress\.md$/i
 
 let hook
 try {
@@ -34,8 +35,24 @@ const pendingFile = join(STATE, `${id8}.txt`)
 
 if (event === "beforeSubmitPrompt") {
   const prompt = (hook.prompt ?? "").trim()
-  if (log) appendFileSync(log, `\n---\n\n**You:** ${prompt}\n`, "utf8")
-  else if (prompt) {
+  if (log) {
+    const wsPath = join(dirname(log), "workspace.md")
+    const wsState = join(STATE, `${id8}-workspace.md`)
+    if (existsSync(wsPath)) {
+      const wsText = readFileSync(wsPath, "utf8").trim()
+      const prevWs = existsSync(wsState) ? readFileSync(wsState, "utf8").trim() : ""
+      if (wsText && wsText !== prevWs) {
+        mkdirSync(STATE, { recursive: true })
+        writeFileSync(wsState, wsText, "utf8")
+        const quoted = wsText
+          .split("\n")
+          .map((l) => `> ${l}`)
+          .join("\n")
+        appendFileSync(log, `\n> [!note]- Workspace snapshot\n${quoted}\n`, "utf8")
+      }
+    }
+    appendFileSync(log, `\n---\n\n**You:** ${prompt}\n`, "utf8")
+  } else if (prompt) {
     mkdirSync(STATE, { recursive: true })
     writeFileSync(pendingFile, prompt, "utf8")
   }
@@ -46,6 +63,16 @@ if (event === "beforeSubmitPrompt") {
     const file = newLogPath(first, id8)
     mkdirSync(join(file, ".."), { recursive: true })
     writeFileSync(file, withLogId(id8, first ? `---\n\n**You:** ${first}\n` : ""), "utf8")
+    const wsPath = join(dirname(file), "workspace.md")
+    if (existsSync(wsPath)) {
+      mkdirSync(STATE, { recursive: true })
+      writeFileSync(join(STATE, `${id8}-workspace.md`), readFileSync(wsPath, "utf8").trim(), "utf8")
+    }
+  } else if (log) {
+    const m = path.match(SUBJECT_PROGRESS)
+    if (m && m[1] !== ".obsidian" && m[1] !== "viz" && m[1] !== "concepts") {
+      routeLogToSubject(log, join(LESSONS, m[1]))
+    }
   }
 } else if (event === "afterAgentResponse") {
   const text = (hook.text ?? "").trim()

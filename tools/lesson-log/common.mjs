@@ -7,14 +7,21 @@
  * `YYYY-MM-DD-session-NN.md` after it moves into a subject folder.
  */
 
-import { readFileSync, readdirSync } from "node:fs"
-import { dirname, join, resolve } from "node:path"
+import { existsSync, readFileSync, readdirSync, renameSync } from "node:fs"
+import { basename, dirname, join, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
 export const REPO = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..")
 export const LESSONS = join(REPO, "lessons")
 
 const SKIP_DIRS = new Set([".obsidian", "viz", "concepts"])
+
+export function localDate(d = new Date()) {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, "0")
+  const day = String(d.getDate()).padStart(2, "0")
+  return `${y}-${m}-${day}`
+}
 
 export function findLog(id8, dir = LESSONS) {
   let entries
@@ -58,7 +65,45 @@ function fileTextHasLogId(text, id8) {
   return new RegExp(`^---\\r?\\nlog_id:\\s*${id8}\\s*(?:\\r?\\n|$)`).test(text)
 }
 
-export function newLogPath(firstPrompt, id8) {
+export function nextSessionLogPath(subjectDir) {
+  let maxSession = 0
+  try {
+    for (const e of readdirSync(subjectDir, { withFileTypes: true })) {
+      if (!e.isFile()) continue
+      const m = e.name.match(/-session-(\d+)\.md$/)
+      if (m) maxSession = Math.max(maxSession, Number(m[1]))
+    }
+  } catch {}
+  const nextNum = String(maxSession + 1).padStart(2, "0")
+  return join(subjectDir, `${localDate()}-session-${nextNum}.md`)
+}
+
+export function detectSingleSubjectDir() {
+  try {
+    const dirs = readdirSync(LESSONS, { withFileTypes: true }).filter(
+      (e) => e.isDirectory() && !SKIP_DIRS.has(e.name) && existsSync(join(LESSONS, e.name, "_progress.md")),
+    )
+    if (dirs.length === 1) return join(LESSONS, dirs[0].name)
+  } catch {}
+  return null
+}
+
+export function routeLogToSubject(logFile, subjectDir) {
+  if (!logFile || !subjectDir || !existsSync(logFile)) return logFile
+  if (dirname(logFile) === subjectDir && /-session-\d+\.md$/.test(basename(logFile))) return logFile
+  const dest = nextSessionLogPath(subjectDir)
+  try {
+    renameSync(logFile, dest)
+    return dest
+  } catch {
+    return logFile
+  }
+}
+
+export function newLogPath(firstPrompt, id8, subjectDir = detectSingleSubjectDir()) {
+  if (subjectDir && existsSync(subjectDir)) {
+    return nextSessionLogPath(subjectDir)
+  }
   const slug =
     (firstPrompt ?? "")
       .replace(/^\/teach\s*/, "")
@@ -67,7 +112,7 @@ export function newLogPath(firstPrompt, id8) {
       .replace(/^-+|-+$/g, "")
       .slice(0, 50)
       .replace(/-+$/, "") || "lesson"
-  return join(LESSONS, `${new Date().toISOString().slice(0, 10)}-${slug}-${id8}.md`)
+  return join(LESSONS, `${localDate()}-${slug}-${id8}.md`)
 }
 
 /**
